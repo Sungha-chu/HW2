@@ -4,116 +4,52 @@
         <meta charset="UTF-8">
         <title>Test Vue</title>
 
+        <link rel="stylesheet" type="text/css" href="index.css">
+        <script src="index.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
-
-    <body>
-        <div id="app">
-             <!--新增-->
-            <h1>Create</h1>
-            Msg:<input type="text" ref="getCreateMsg"><button v-on:click="Create">Enter</button>
-
-            <!--讀取-->
-            <h1>Read</h1>
-            <button v-on:click="Read">Enter</button>
-            <br/>
-            <table>
-                <thead>
+    <body onload="init();">
+        <h1>瀏覽資料</h1>
+        <table class="table">
+            <thead>
+                <tr>
                     <th>ID</th>
-                    <th>MSG</th>
-                </thead>
-                <tbody id="table">
-                    
-                </tbody>
-                
-            </table>
+                    <th>Msg</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+        <button onclick="document.querySelector('#CreateNewMsgDialog').showModal();">新增</button>
 
-            <!--修改-->
-            <h1>Update</h1>
-            ID:<input type="text" ref="getUpdateId">Msg:<input type="text" ref="getUpdateMsg"><button v-on:click="Update">Enter</button>
+        <dialog id="CreateNewMsgDialog">
+            <p><h2>新增</h2></p>
+            <label>請輸入Msg:</label><input id="NewMsgToCreate" type="text"></input>
+            <p>
+                <button id="CreateNewMsgDialogSave" onclick="CreateNewMsgDialogBtns('CreateNewMsgDialogSave');">送出</button>
+                <button id="CreateNewMsgDialogCancel" onclick="CreateNewMsgDialogBtns('CreateNewMsgDialogCancel');">取消</button>
+            </p>
+        </dialog>
 
-            <!--刪除-->
-            <h1>Delete</h1>
-            ID:<input type="text" ref="getDeleteId"><button v-on:click="Delete">Enter</button>
-        </div>
+        <dialog id="EditMsgDialog">
+            <p><h2>編輯</h2></p>
+            <label>ID: </label><input id="IdToEdit" type="text" disabled></input>
+            <label>請輸入Msg: </label><input id="MsgToEdit" type="text"></input>
+            <p>
+                <button id="EditMsgDialogSave" onclick="UdpateMsg('EditMsgDialogSave');">送出</button>
+                <button id="EditMsgDialogCancel" onclick="UdpateMsg('EditMsgDialogCancel');">取消</button>
+            </p>
+        </dialog>
 
-        <script>
-        new Vue({
-            el:'#app',
-            data: {
-                item: {'id':'','msg':''},
-                items:[],
-            },
-            methods:{
-                Create(){
-                    var data = {
-                        "LogMsg":this.$refs.getCreateMsg.value
-                    }
-                    axios.post('https://localhost:7219/api/TestLog',data)
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-                },
-                Read(){
-                    //GET請求
-                    axios.get('https://localhost:7219/api/TestLog')
-                    .then(response => {
-                        ReadResponseFunc(response.data)     
-                        ShowAllDataInTable(response.data)   //在table顯示
-                    }).catch( (error) => console.log(error))
-                },
-                Update(){
-                    var data = {
-                        "id": this.$refs.getUpdateId.value,
-                        "LogMsg": this.$refs.getUpdateMsg.value
-                    }
-                    axios.put('https://localhost:7219/api/TestLog/'+this.$refs.getUpdateId.value, data)
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-                },
-                Delete(){
-                    axios.delete('https://localhost:7219/api/TestLog/'+this.$refs.getDeleteId.value)
-                    .then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-                }
-            }
-        });
-
-       
-
-        function ReadResponseFunc(Response){
-            Response.forEach(element => {
-                console.log(element);
-                console.log(element.id);
-                console.log(element.logMsg);
-            });
-        }
-
-        function ShowAllDataInTable(Response){
-            document.querySelector("#table").innerHTML = "";
-            Response.forEach(element => {
-                tr = document.createElement('tr');
-                id = document.createElement('td');
-                id.innerHTML = element.id;
-                msg = document.createElement('td');
-                msg.innerHTML = element.logMsg;
-                tr.appendChild(id);
-                tr.appendChild(msg);
-                document.querySelector("#table").appendChild(tr);
-            });
-        }
-        </script>
+        <dialog id="DeleteMsgDialog">
+            <p><h2>刪除</h2></p>
+            <label>ID: </label><input id="IdToDelete" type="text" disabled></input>
+            <label>請輸入Msg: </label><input id="MsgToDelete" type="text" disabled></input>
+            <p>
+                <button id="DeleteMsgDialogSave" style="background-color: red;" onclick="DeleteMsgBtns('DeleteMsgDialogSave');">刪除</button>
+                <button id="DeleteMsgDialogCancel" onclick="DeleteMsgBtns('DeleteMsgDialogCancel');">取消</button>
+            </p>
+        </dialog>
     </body>
 </html>
